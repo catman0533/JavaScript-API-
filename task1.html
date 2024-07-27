@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пример без jQuery с Bootstrap</title>
+    <!-- Подключение Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container my-4">
+        <h1 class="mb-4">Расписание занятий</h1>
+        <div id="schedule"></div>
+    </div>
+    <script>
+        // Пример массива классов для демонстрации
+        let classes = [
+            { id: 1, title: 'Йога', time: '10:00', currentParticipants: 8, maxParticipants: 10 },
+            { id: 2, title: 'Фитнес', time: '12:00', currentParticipants: 12, maxParticipants: 12 },
+            { id: 3, title: 'Пилатес', time: '14:00', currentParticipants: 6, maxParticipants: 10 }
+        ];
+
+        function renderSchedule() {
+            const schedule = document.getElementById('schedule');
+            schedule.innerHTML = ''; // Очистка перед рендерингом
+
+            classes.forEach(cls => {
+                const isFull = cls.currentParticipants >= cls.maxParticipants;
+
+                const classCard = document.createElement('div');
+                classCard.classList.add('card', 'mb-3');
+
+                const cardBody = document.createElement('div');
+                cardBody.classList.add('card-body');
+                
+                const cardTitle = document.createElement('h5');
+                cardTitle.classList.add('card-title');
+                cardTitle.innerText = cls.title;
+
+                const cardTime = document.createElement('p');
+                cardTime.classList.add('card-text');
+                cardTime.innerText = `Время: ${cls.time}`;
+
+                const cardParticipants = document.createElement('p');
+                cardParticipants.classList.add('card-text');
+                cardParticipants.innerText = `Участников: ${cls.currentParticipants}/${cls.maxParticipants}`;
+
+                const enrollButton = document.createElement('button');
+                enrollButton.classList.add('btn', 'btn-primary', 'enroll-btn');
+                enrollButton.innerText = 'Записаться';
+                enrollButton.disabled = isFull;
+                enrollButton.setAttribute('data-id', cls.id);
+
+                const unenrollButton = document.createElement('button');
+                unenrollButton.classList.add('btn', 'btn-danger', 'unenroll-btn');
+                unenrollButton.innerText = 'Отменить запись';
+                unenrollButton.setAttribute('data-id', cls.id);
+
+                cardBody.appendChild(cardTitle);
+                cardBody.appendChild(cardTime);
+                cardBody.appendChild(cardParticipants);
+                cardBody.appendChild(enrollButton);
+                cardBody.appendChild(unenrollButton);
+
+                classCard.appendChild(cardBody);
+                schedule.appendChild(classCard);
+            });
+
+            attachEventListeners();
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.enroll-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const classId = parseInt(this.getAttribute('data-id'));
+                    const cls = classes.find(c => c.id === classId);
+                    if (cls && cls.currentParticipants < cls.maxParticipants) {
+                        cls.currentParticipants++;
+                        renderSchedule();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.unenroll-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const classId = parseInt(this.getAttribute('data-id'));
+
+                    const cls = classes.find(c => c.id === classId);
+                    if (cls && cls.currentParticipants > 0) {
+                        cls.currentParticipants--;
+                        renderSchedule();
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            renderSchedule();
+        });
+    </script>
+    <!-- Подключение Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
