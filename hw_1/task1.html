@@ -8,17 +8,21 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div id="schedule" class="container my-4"></div>
+    <div class="container my-4">
+        <h1 class="mb-4">Расписание занятий</h1>
+        <div id="schedule"></div>
+    </div>
     <script>
         // Пример массива классов для демонстрации
-        const classes = [
+        let classes = [
             { id: 1, title: 'Йога', time: '10:00', currentParticipants: 8, maxParticipants: 10 },
             { id: 2, title: 'Фитнес', time: '12:00', currentParticipants: 12, maxParticipants: 12 },
             { id: 3, title: 'Пилатес', time: '14:00', currentParticipants: 6, maxParticipants: 10 }
         ];
 
-        document.addEventListener('DOMContentLoaded', function () {
+        function renderSchedule() {
             const schedule = document.getElementById('schedule');
+            schedule.innerHTML = ''; // Очистка перед рендерингом
 
             classes.forEach(cls => {
                 const isFull = cls.currentParticipants >= cls.maxParticipants;
@@ -61,6 +65,37 @@
                 classCard.appendChild(cardBody);
                 schedule.appendChild(classCard);
             });
+
+            attachEventListeners();
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.enroll-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const classId = parseInt(this.getAttribute('data-id'));
+                    const cls = classes.find(c => c.id === classId);
+                    if (cls && cls.currentParticipants < cls.maxParticipants) {
+                        cls.currentParticipants++;
+                        renderSchedule();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.unenroll-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const classId = parseInt(this.getAttribute('data-id'));
+
+                    const cls = classes.find(c => c.id === classId);
+                    if (cls && cls.currentParticipants > 0) {
+                        cls.currentParticipants--;
+                        renderSchedule();
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            renderSchedule();
         });
     </script>
     <!-- Подключение Bootstrap JS -->
